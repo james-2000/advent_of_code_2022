@@ -1,0 +1,48 @@
+use std::{
+    collections::HashSet,
+    io::{BufRead, BufReader, Cursor},
+};
+
+use crate::challenge::Challenge;
+
+pub struct Challenge3;
+
+const LOWER_CHAR_OFFSET: u8 = 96;
+const UPPER_CHAR_OFFSET: u8 = 38;
+
+fn get_priority(char: &&u8) -> usize {
+    let char = *char;
+    if *char >= b'a' && *char <= b'z' {
+        return (*char - LOWER_CHAR_OFFSET).into();
+    } else {
+        return (*char - UPPER_CHAR_OFFSET).into();
+    }
+}
+
+impl Challenge for Challenge3 {
+    fn run(&self) {
+        let data = include_bytes!("../data/challenge_3.txt");
+        let buffer = BufReader::new(Cursor::new(data));
+        let mut grand_total: usize = 0;
+
+        for line in buffer.lines() {
+            match line {
+                Ok(line) => {
+                    let mid_point = line.len() / 2;
+                    let (first, second) = line.split_at(mid_point);
+                    let mut common = Vec::from_iter(
+                        second
+                            .as_bytes()
+                            .iter()
+                            .filter(|c| first.contains(**c as char)),
+                    );
+                    common.sort();
+                    common.dedup();
+                    grand_total += common.iter().map(get_priority).sum::<usize>();
+                }
+                Err(e) => panic!("Error: {}", e),
+            }
+        }
+        println!("Grand Total: {}", grand_total);
+    }
+}
