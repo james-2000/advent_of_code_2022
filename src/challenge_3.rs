@@ -21,9 +21,13 @@ fn get_priority(char: &&u8) -> usize {
 
 impl Challenge for Challenge3 {
     fn run(&self) {
+        const GROUP_INDEX_LEN: i32 = 3;
         let data = include_bytes!("../data/challenge_3.txt");
         let buffer = BufReader::new(Cursor::new(data));
         let mut grand_total: usize = 0;
+        let mut badge_total: usize = 0;
+        let mut group_index = 0;
+        let mut badge_vector: Vec<u8> = Vec::new();
 
         for line in buffer.lines() {
             match line {
@@ -39,10 +43,29 @@ impl Challenge for Challenge3 {
                     common.sort();
                     common.dedup();
                     grand_total += common.iter().map(get_priority).sum::<usize>();
+
+                    match group_index {
+                        GROUP_INDEX_LEN => {
+                            group_index = 0;
+                            badge_vector = line.as_bytes().to_owned().to_vec();
+                        }
+                        _ => {
+                            badge_vector = badge_vector
+                                .into_iter()
+                                .filter(|x| line.contains(*x as char))
+                                .collect();
+                            if group_index == GROUP_INDEX_LEN - 1 {
+                                badge_total +=
+                                    badge_vector.iter().map(|x| get_priority(&x)).sum::<usize>();
+                            }
+                        }
+                    };
+                    group_index += 1;
                 }
                 Err(e) => panic!("Error: {}", e),
             }
         }
         println!("Grand Total: {}", grand_total);
+        println!("Badge Total: {}", badge_total);
     }
 }

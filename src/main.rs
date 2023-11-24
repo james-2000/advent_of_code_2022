@@ -2,6 +2,7 @@ use challenge::Challenge;
 use challenge_1::Challenge1;
 use challenge_2::Challenge2;
 use challenge_3::Challenge3;
+use challenge_4::Challenge4;
 use clap::Parser;
 use std::{time::Instant, vec};
 
@@ -9,6 +10,7 @@ mod challenge;
 mod challenge_1;
 mod challenge_2;
 mod challenge_3;
+mod challenge_4;
 
 const CHALLENGE_OFFSET: isize = -1;
 
@@ -29,6 +31,7 @@ fn main() {
         Box::new(Challenge1),
         Box::new(Challenge2),
         Box::new(Challenge3),
+        Box::new(Challenge4),
     ];
 
     match args.challenge {
